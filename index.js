@@ -1,8 +1,3 @@
-// Fix Node 16 pour ytdl-core Facebook
-const { File, Blob } = require('buffer')
-global.File = File
-global.Blob = Blob
-
 const express = require('express');
 const path = require('path');
 const { spawn } = require("child_process");
@@ -10,6 +5,11 @@ const fs = require("fs");
 const http = require("http");
 const WebSocket = require("ws");
 const log = require("./logger/log.js");
+
+// Fix Node 16 pour ytdl-core
+const { File, Blob } = require('buffer')
+global.File = File
+global.Blob = Blob
 
 const app = express();
 const server = http.createServer(app);
@@ -74,7 +74,10 @@ const log = document.getElementById("log"); let autoScroll = true;
 fetch("/logs.txt").then(r => r.text()).then(t => { log.innerHTML = colorize(t); if (autoScroll) log.scrollTop = log.scrollHeight; });
 const ws = new WebSocket("wss://" + location.host);
 ws.onmessage = e => { const line = colorize(e.data); log.innerHTML += "<br>" + line; if (autoScroll) log.scrollTop = log.scrollHeight; };
-function colorize(text) { return text.replace(/\n/g, "<br>").replace(/\[.*?ERROR.*?\]/gi, match => `<span class="error">${match}</span>`); }
+// Highlight errors - CORRIGÉ
+function colorize(text) {
+  return text.replace(/\\n/g, "<br>").replace(/\\[.*?ERROR.*?\\]/gi, match => \`<span class="error">\${match}</span>\`);
+}
 function scrollToTop() { log.scrollTop = 0; }
 function scrollToBottom() { log.scrollTop = log.scrollHeight; }
 function toggleAutoScroll() { autoScroll =!autoScroll; document.getElementById("autoscroll-status").textContent = autoScroll? "ON" : "OFF"; }
@@ -93,9 +96,9 @@ server.listen(port, () => {
   console.log(`📡 Web server running on port ${port}`);
 });
 
-// Start Goat.js et restart auto
+// Start Goat.js
 function startProject() {
-  console.log("[DEBUG] Starting GoatBot...");
+  console.log("[DEBUG] Starting Bot...");
   const child = spawn("node", ["Goat.js"], {
     cwd: __dirname,
     stdio: ['inherit', 'pipe', 'pipe']
@@ -114,7 +117,7 @@ function startProject() {
   child.on("close", (code) => {
     console.log(`[Goat.js] Exited with code ${code}`);
     if (code!== 0) {
-      log.info("Restarting Project in 3s...");
+      log.info("Restarting Project...");
       setTimeout(startProject, 3000);
     }
   });
