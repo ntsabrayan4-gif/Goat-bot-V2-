@@ -1,7 +1,7 @@
 # 🐐 Goat Bot v2
 
 A **Messenger Bot** built using **Node.js** that runs on your personal Facebook account.  
-Made with ❤️ by **NTKhang** & customized for extended use.
+Made with ❤️ by **ḄṘẎḀṄ** & customized for extended use.
 
 ---
 
